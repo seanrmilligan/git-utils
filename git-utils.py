@@ -17,7 +17,11 @@ usageargs = [
 	'        The directory to recursively search for git repositories.',
 	''
 ]
-usageopts = ['    {:s} --list-remotes DIR', '    {:s} --list-uncommitted DIR']
+usageopts = [
+	'    {:s} --list-remotes DIR',
+	'    {:s} --list-uncommitted DIR',
+	'    {:s} --list-unpushed DIR'
+]
 error_str = '[Error]'
 invalid_argc_str = 'Invalid number of arguments.'
 invalid_param_str = 'Parameter: {:s} is not a valid option.'
@@ -57,6 +61,9 @@ def list_unpushed(path):
 			list_unpushed(dir)
 
 def pushed(path):
+	# investigate possible differences with:
+	# git log @{u}..
+
 	with open('/dev/null', 'w') as null_file:
 		process = subprocess.run(["git", "log", "--branches", "--not", "--remotes"], stdout=subprocess.PIPE, stderr=null_file)
 
@@ -132,5 +139,5 @@ if __name__ == '__main__':
 		warn(invalid_argc_str, progname)
 
 
-# git log @{u}..
+
 # see unpushed commits to the upstream for the current branch only
