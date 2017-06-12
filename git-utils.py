@@ -29,7 +29,7 @@ def list_remotes(path):
 	os.chdir(path)
 
 	if repo(path):
-		print('{:s}: {:s}'.format(path, remote(path))) 
+		print('{:s}:\n{:s}'.format(path, remote(path))) 
 	else:
 		for dir in subdirs(path):
 			list_remotes(dir)
@@ -53,14 +53,11 @@ def repo(path):
 	return process.returncode is success_code
 
 def remote(path):
-	pattern = re.compile("git@(.*)\.git")
-
 	with open('/dev/null', 'w') as null_file:
 		process = subprocess.run(["git", "remote", "-v"], stdout=subprocess.PIPE, stderr=null_file)
-
-	matches = re.search(pattern, str(process.stdout, 'utf-8'))
 	
-	return matches.group(0) if matches else "no remote"
+	remotes = str(process.stdout, 'utf-8')
+	return remotes if remotes else "no remotes\n"
 
 def up_to_date(path):
 	with open('/dev/null', 'w') as null_file:
