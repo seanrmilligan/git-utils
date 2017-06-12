@@ -1,9 +1,12 @@
 #!/usr/bin/env python3
 
+# library code
 import os
 import re
-import subprocess
 import sys
+
+# project code
+from git_commands import *
 
 descr = '    This tool recursively searches for git repositories within a directory,\n    returning information based on the selected operation.'
 usageargs = [
@@ -31,69 +34,30 @@ resources_str = 'For more information, see {:s} --help'
 
 debug = True
 
-def list_remotes(path):
+def traverse(path, func):
 	os.chdir(path)
 
 	if repo(path):
-		print('{:s}:\n{:s}'.format(path, remote(path))) 
+		func(path)
 	else:
 		for dir in subdirs(path):
-			list_remotes(dir)
+			traverse(dir, func)
+
+def list_remotes(path):
+	print('{:s}:\n{:s}'.format(path, remote(path)))
 
 def list_uncommitted(path):
-	os.chdir(path)
-
-	if repo(path):
-		if not up_to_date(path):
-			print(path)
-	else:
-		for dir in subdirs(path):
-			list_uncommitted(dir)
+	if not committed(path):
+		print(path)
 
 def list_unpushed(path):
-	os.chdir(path)
-
-	if repo(path):
-		if not pushed(path):
-			print(path)
-	else:
-		for dir in subdirs(path):
-			list_unpushed(dir)
-
-def pushed(path):
-	# investigate possible differences with:
-	# git log @{u}..
-
-	with open('/dev/null', 'w') as null_file:
-		process = subprocess.run(["git", "log", "--branches", "--not", "--remotes"], stdout=subprocess.PIPE, stderr=null_file)
-
-	return True if not str(process.stdout, 'utf-8') else False
-
-def repo(path):
-	success_code = 0
-
-	with open('/dev/null', 'w') as null_file:	
-		process = subprocess.run(["git", "status"], stdout=null_file, stderr=null_file)
-
-	return process.returncode is success_code
-
-def remote(path):
-	with open('/dev/null', 'w') as null_file:
-		process = subprocess.run(["git", "remote", "-v"], stdout=subprocess.PIPE, stderr=null_file)
-	
-	remotes = str(process.stdout, 'utf-8')
-	return remotes if remotes else "no remotes\n"
-
-def up_to_date(path):
-	with open('/dev/null', 'w') as null_file:
-		process = subprocess.run(["git", "status"], stdout=subprocess.PIPE, stderr=null_file)
-	
-	return True if "nothing to commit" in str(process.stdout, 'utf-8') else False
+	if not pushed(path):
+		print(path)
 
 def subdirs(path):
-	# list() apparently faster than the equivalent list comprehension due to C optimization
-	return [os.path.join(path, item) for item in os.listdir(path) if os.path.isdir(os.path.join(path, item))]
-    # return list(os.listdir(path) if os.path.isdir(os.path.join(path, item)))
+	# list() is apparently faster than the equivalent list comprehension due to C optimization
+	# return [os.path.join(path, item) for item in os.listdir(path) if os.path.isdir(os.path.join(path, item))]
+    return list(os.path.join(path, item) for item in os.listdir(path) if os.path.isdir(os.path.join(path, item)))
 
 def warn(warning, progname):
 	print('{:s} {:s}'.format(error_str, warning))
@@ -128,11 +92,11 @@ if __name__ == '__main__':
 		operation = sys.argv[1]
 		path = os.path.abspath(sys.argv[2])
 		if operation == "--list-uncommitted":
-			list_uncommitted(path)
+			traverse(path, list_uncommitted)
 		elif operation == "--list-unpushed":
-			list_unpushed(path)
+			traverse(path, list_unpushed)
 		elif operation == "--list-remotes":
-			list_remotes(path)
+			traverse(path, list_remotes)
 		else:
 			warn(invalid_param_str.format(operation), progname)
 	else:
