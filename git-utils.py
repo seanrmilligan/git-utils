@@ -11,6 +11,8 @@ usageargs = [
 	'        List the remote repo URL(s) for each git repo in DIR.',
 	'    --list-uncommited',
 	'        List the repos for which there are uncommitted changes in DIR.',
+	'    --list-unpushed',
+	'        List the repos for which there are unpushed changes in DIR.',
 	'    DIR',
 	'        The directory to recursively search for git repositories.',
 	''
@@ -43,6 +45,22 @@ def list_uncommitted(path):
 	else:
 		for dir in subdirs(path):
 			list_uncommitted(dir)
+
+def list_unpushed(path):
+	os.chdir(path)
+
+	if repo(path):
+		if not pushed(path):
+			print(path)
+	else:
+		for dir in subdirs(path):
+			list_unpushed(dir)
+
+def pushed(path):
+	with open('/dev/null', 'w') as null_file:
+		process = subprocess.run(["git", "log", "--branches", "--not", "--remotes"], stdout=subprocess.PIPE, stderr=null_file)
+
+	return True if not str(process.stdout, 'utf-8') else False
 
 def repo(path):
 	success_code = 0
@@ -104,10 +122,15 @@ if __name__ == '__main__':
 		path = os.path.abspath(sys.argv[2])
 		if operation == "--list-uncommitted":
 			list_uncommitted(path)
+		elif operation == "--list-unpushed":
+			list_unpushed(path)
 		elif operation == "--list-remotes":
 			list_remotes(path)
 		else:
 			warn(invalid_param_str.format(operation), progname)
 	else:
 		warn(invalid_argc_str, progname)
-		
+
+
+# git log @{u}..
+# see unpushed commits to the upstream for the current branch only
