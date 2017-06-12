@@ -57,6 +57,11 @@ def list_unpushed(path):
 			list_unpushed(dir)
 
 def pushed(path):
+	# git log --branches --not --remotes
+	# returns any commit on any branch that was not pushed to remote
+	#
+	# git log @{u}..
+	# returns only commits on the current branch that were not pushed to remote
 	with open('/dev/null', 'w') as null_file:
 		process = subprocess.run(["git", "log", "--branches", "--not", "--remotes"], stdout=subprocess.PIPE, stderr=null_file)
 
