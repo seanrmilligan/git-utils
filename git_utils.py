@@ -12,6 +12,8 @@ descr = '    This tool recursively searches for git repositories within a direct
 usageargs = [
 	'    --list-remotes',
 	'        List the remote repo URL(s) for each git repo in DIR.',
+	'    --list-repos',
+	'        List the absolute path for each git repo in DIR.',
 	'    --list-uncommited',
 	'        List the repos for which there are uncommitted changes in DIR.',
 	'    --list-unpushed',
@@ -20,7 +22,13 @@ usageargs = [
 	'        The directory to recursively search for git repositories.',
 	''
 ]
-usageopts = ['    {:s} --list-remotes DIR', '    {:s} --list-uncommitted DIR']
+usageopts = [
+    '    {:s} --list-remotes DIR',
+    '    {:s} --list-repos DIR',
+    '    {:s} --list-uncommitted DIR',
+    '    {:s} --list-unpushed DIR',
+    ''
+]
 error_str = '[Error]'
 invalid_argc_str = 'Invalid number of arguments.'
 invalid_param_str = 'Parameter: {:s} is not a valid option.'
@@ -41,6 +49,9 @@ def traverse(path, func):
 
 def list_remotes(path):
 	print('{:s}:\n{:s}'.format(path, remote(path)))
+
+def list_repos(path):
+	print(path)
 
 def list_uncommitted(path):
 	if not committed(path):
@@ -93,6 +104,8 @@ if __name__ == '__main__':
 			traverse(path, list_unpushed)
 		elif operation == "--list-remotes":
 			traverse(path, list_remotes)
+		elif operation == "--list-repos":
+			traverse(path, list_repos)
 		else:
 			warn(invalid_param_str.format(operation), progname)
 	else:
