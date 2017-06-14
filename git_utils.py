@@ -2,7 +2,6 @@
 
 # library code
 import os
-import re
 import sys
 
 # project code
@@ -98,6 +97,7 @@ if __name__ == '__main__':
 	elif argc is 3:
 		operation = sys.argv[1]
 		path = os.path.abspath(sys.argv[2])
+
 		if operation == "--list-uncommitted":
 			traverse(path, list_uncommitted)
 		elif operation == "--list-unpushed":
