@@ -29,8 +29,8 @@ Listing remotes:
 ```
 sean@computer $ ./gitutils --list-remotes /home/sean/projects/
 /home/sean/projects/git-utils:
-origin	git@code.seanrmilligan.com:sean/git-utils.git (fetch)
-origin	git@code.seanrmilligan.com:sean/git-utils.git (push)
+origin	git@github.com:sean/git-utils.git (fetch)
+origin	git@github.com:sean/git-utils.git (push)
 
 /home/sean/projects/fictitious-local-project:
 no remotes
@@ -39,7 +39,7 @@ sean@computer $
 ```
 
 The power of these commands come from chaining them with other tools such as grep.
-- List repositories that have no remote: `./gitutils --list-remotes /home/sean/projects/ | grep "no remotes" -B 1`
+- List repositories with no remote: `./gitutils --list-remotes /home/sean/projects/ | grep "no remotes" -B 1`
 - List only repositories on github.com: `./gitutils --list-remotes /home/sean/projects/ | grep github -B 1`
 
 ## Motivation
