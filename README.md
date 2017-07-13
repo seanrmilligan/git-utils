@@ -29,8 +29,8 @@ Listing remotes:
 ```
 sean@computer $ ./gitutils --list-remotes /home/sean/projects/
 /home/sean/projects/git-utils:
-origin	git@github.com:sean/git-utils.git (fetch)
-origin	git@github.com:sean/git-utils.git (push)
+origin	git@github.com:seanrmilligan/git-utils.git (fetch)
+origin	git@github.com:seanrmilligan/git-utils.git (push)
 
 /home/sean/projects/fictitious-local-project:
 no remotes
